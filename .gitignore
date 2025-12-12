@@ -1,0 +1,12 @@
+.env
+.DS_Store
+*.md
+*.txt
+*.sh
+*.xml
+*.zip
+sql/
+xml/
+cmd/
+scripts/
+static/

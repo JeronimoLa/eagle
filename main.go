@@ -101,7 +101,7 @@ func main() {
 
 	// API
 	v1 := chi.NewRouter()
-	v1.Get("/symbol", apiCfg.handlerfilings)
+	v1.Get("/ticker", apiCfg.handlerF4Filings)
 	mainRouter.Mount("/v1", v1)
 
 	http.ListenAndServe(":3000", mainRouter)
