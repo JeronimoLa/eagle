@@ -8,12 +8,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 
+	"github.com/jeronimoLa/eagle/internal/client"
 	"github.com/jeronimoLa/eagle/internal/database"
 	"github.com/jeronimoLa/eagle/internal/edgar"
 
@@ -23,19 +25,27 @@ import (
 //go:embed static/*
 var staticFiles embed.FS
 
-type apiConfig struct {
+type appConfig struct {
 	db    *database.Queries
-	edgar *edgar.EdgarConfig
 }
 
 func main() {
-	apiCfg := &apiConfig{}
+	httpClient := http.Client{
+		Timeout: 3 * time.Second,
+	}
+	clientService := client.New(&client.Config{
+		HTTPClient: &httpClient,
+	})
+
+	appCfg := &appConfig{}
+
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
 	dbURL := os.Getenv("DATABASE_URL")
+	// var dbConn *database.Queries
 	if dbURL == "" {
 		log.Println("Database url is not set")
 
@@ -45,11 +55,12 @@ func main() {
 			log.Println("unable to connect to postgres")
 		}
 		dbQueries := database.New(db)
-		apiCfg.db = dbQueries
+		appCfg.db = dbQueries
 		log.Println("Successfully connected to db")
 	}
 
-	apiCfg.edgar = edgar.New()
+	edgarSvc := edgar.New(clientService, appCfg.db)
+	edgarHandler := edgar.NewHandler(edgarSvc)
 
 	type ticker struct {
 		ticker string
@@ -62,7 +73,7 @@ func main() {
 	}
 
 	for _, mapper := range listOfTickers {
-		_, err := apiCfg.db.InsertTickerCik(context.Background(), database.InsertTickerCikParams{
+		_, err := appCfg.db.InsertTickerCik(context.Background(), database.InsertTickerCikParams{
 			ID:     uuid.New(),
 			Ticker: mapper.ticker,
 			Cik:    mapper.cik,
@@ -101,7 +112,7 @@ func main() {
 
 	// API
 	v1 := chi.NewRouter()
-	v1.Get("/ticker", apiCfg.handlerF4Filings)
+	v1.Get("/ticker", edgarHandler.HandlerF4Filings)
 	mainRouter.Mount("/v1", v1)
 
 	http.ListenAndServe(":3000", mainRouter)
