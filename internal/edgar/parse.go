@@ -1,9 +1,6 @@
 package edgar
 
 import (
-	"encoding/json"
-	"fmt"
-
 	"github.com/Rhymond/go-money"
 )
 
@@ -57,9 +54,6 @@ func (cfg *edgarService) ParseForm4Files(form4files []TransactionMapping) (map[s
 			Data:         obj,
 		}
 	}
-
-	b, _ := json.MarshalIndent(data, "", "  ")
-	fmt.Println(string(b))
 	return data, nil
 
 }

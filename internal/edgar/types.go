@@ -114,7 +114,7 @@ type Transactions struct {
 
 type ValidTransactionSignal struct {
 	CIK          string         `json:"cik"`
-	DocumentType string         `json:document_type`
+	DocumentType string         `json:"document_type"`
 	SharesBought float64        `json:"shares_bought"`
 	SharesSold   float64        `json:"shares_sold"`
 	RptOwner     string         `json:"rpt_owner"`
