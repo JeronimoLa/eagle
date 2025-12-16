@@ -26,16 +26,10 @@ import (
 var staticFiles embed.FS
 
 type appConfig struct {
-	db    *database.Queries
+	db *database.Queries
 }
 
 func main() {
-	httpClient := http.Client{
-		Timeout: 3 * time.Second,
-	}
-	clientService := client.New(&client.Config{
-		HTTPClient: &httpClient,
-	})
 
 	appCfg := &appConfig{}
 
@@ -44,8 +38,17 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatalln("PORT is not configured inside .env to start up")
+	}
+
+	userAgent := os.Getenv("USER_AGENT")
+	if userAgent == "" {
+		log.Fatalln("USER_AGENT must be configured inside .env to fetch data")
+	}
+
 	dbURL := os.Getenv("DATABASE_URL")
-	// var dbConn *database.Queries
 	if dbURL == "" {
 		log.Println("Database url is not set")
 
@@ -59,7 +62,15 @@ func main() {
 		log.Println("Successfully connected to db")
 	}
 
-	edgarSvc := edgar.New(clientService, appCfg.db)
+	httpClient := http.Client{
+		Timeout: 3 * time.Second,
+	}
+	clientService := client.New(&client.Config{
+		HTTPClient: &httpClient,
+		UserAgent:  userAgent,
+	})
+
+	edgarSvc := edgar.NewService(clientService, appCfg.db)
 	edgarHandler := edgar.NewHandler(edgarSvc)
 
 	type ticker struct {
@@ -115,6 +126,6 @@ func main() {
 	v1.Get("/ticker", edgarHandler.HandlerF4Filings)
 	mainRouter.Mount("/v1", v1)
 
-	http.ListenAndServe(":3000", mainRouter)
+	http.ListenAndServe(":"+port, mainRouter)
 
 }
