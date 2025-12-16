@@ -6,7 +6,7 @@ eagle
 *.sh
 *.xml
 *.zip
-sql/
+tmp/
 xml/
 cmd/
 scripts/
