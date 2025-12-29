@@ -10,23 +10,22 @@ import (
 	"time"
 )
 
-const insertF4FilingRecord = `-- name: InsertF4FilingRecord :many
+const insertF4FilingRecord = `-- name: InsertF4FilingRecord :exec
 INSERT INTO f4_filings 
 (accession_number, document_type, period_of_report, issuer_cik, issuerTradingSymbol,
 rpt_owner_cik, rpt_owner_name, officer_title, created_at, form4_url)
 VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7,
-    $8,
-    $9,
-    $10
-) 
-RETURNING accession_number, document_type, period_of_report, issuer_cik, issuertradingsymbol, rpt_owner_cik, rpt_owner_name, officer_title, created_at, form4_url
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?
+)
 `
 
 type InsertF4FilingRecordParams struct {
@@ -42,8 +41,8 @@ type InsertF4FilingRecordParams struct {
 	Form4Url            string
 }
 
-func (q *Queries) InsertF4FilingRecord(ctx context.Context, arg InsertF4FilingRecordParams) ([]F4Filing, error) {
-	rows, err := q.db.QueryContext(ctx, insertF4FilingRecord,
+func (q *Queries) InsertF4FilingRecord(ctx context.Context, arg InsertF4FilingRecordParams) error {
+	_, err := q.db.ExecContext(ctx, insertF4FilingRecord,
 		arg.AccessionNumber,
 		arg.DocumentType,
 		arg.PeriodOfReport,
@@ -55,34 +54,5 @@ func (q *Queries) InsertF4FilingRecord(ctx context.Context, arg InsertF4FilingRe
 		arg.CreatedAt,
 		arg.Form4Url,
 	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []F4Filing
-	for rows.Next() {
-		var i F4Filing
-		if err := rows.Scan(
-			&i.AccessionNumber,
-			&i.DocumentType,
-			&i.PeriodOfReport,
-			&i.IssuerCik,
-			&i.Issuertradingsymbol,
-			&i.RptOwnerCik,
-			&i.RptOwnerName,
-			&i.OfficerTitle,
-			&i.CreatedAt,
-			&i.Form4Url,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	return err
 }

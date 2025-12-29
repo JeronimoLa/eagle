@@ -6,8 +6,6 @@ package database
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type F4Filing struct {
@@ -24,7 +22,6 @@ type F4Filing struct {
 }
 
 type TickerCikMapping struct {
-	ID     uuid.UUID
-	Ticker string
 	Cik    string
+	Ticker string
 }

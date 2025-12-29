@@ -7,13 +7,11 @@ package database
 
 import (
 	"context"
-
-	"github.com/google/uuid"
 )
 
 const getCIKByTicker = `-- name: GetCIKByTicker :one
 SELECT cik from ticker_cik_mapping
-WHERE ticker = $1
+WHERE ticker = ?
 `
 
 func (q *Queries) GetCIKByTicker(ctx context.Context, ticker string) (string, error) {
@@ -23,42 +21,21 @@ func (q *Queries) GetCIKByTicker(ctx context.Context, ticker string) (string, er
 	return cik, err
 }
 
-const insertTickerCik = `-- name: InsertTickerCik :many
+const insertTickerCik = `-- name: InsertTickerCik :exec
 INSERT INTO ticker_cik_mapping 
-(id, ticker, cik)
+(ticker, cik)
 VALUES (
-    $1,
-    $2,
-    $3
-) 
-RETURNING id, ticker, cik
+    ?,
+    ?
+)
 `
 
 type InsertTickerCikParams struct {
-	ID     uuid.UUID
 	Ticker string
 	Cik    string
 }
 
-func (q *Queries) InsertTickerCik(ctx context.Context, arg InsertTickerCikParams) ([]TickerCikMapping, error) {
-	rows, err := q.db.QueryContext(ctx, insertTickerCik, arg.ID, arg.Ticker, arg.Cik)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []TickerCikMapping
-	for rows.Next() {
-		var i TickerCikMapping
-		if err := rows.Scan(&i.ID, &i.Ticker, &i.Cik); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) InsertTickerCik(ctx context.Context, arg InsertTickerCikParams) error {
+	_, err := q.db.ExecContext(ctx, insertTickerCik, arg.Ticker, arg.Cik)
+	return err
 }
