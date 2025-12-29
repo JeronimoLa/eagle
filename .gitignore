@@ -9,6 +9,5 @@ eagle
 tmp/
 xml/
 cmd/
-static/
 misc/
 test-scripts/

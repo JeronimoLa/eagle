@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample HTML Page</title>
+    <style>
+
+    * {
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+body {
+    background: #f5f7fa;
+    padding: 40px;
+    color: #333;
+}
+
+/* Form styling */
+form {
+    background: #ffffff;
+    padding: 20px 24px;
+    border-radius: 8px;
+    max-width: 400px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+form input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccd3db;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+form input[type="text"]:focus {
+    outline: none;
+    border-color: #4f8cff;
+    box-shadow: 0 0 0 2px rgba(79, 140, 255, 0.2);
+}
+
+form input[type="submit"] {
+    background: #4f8cff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+form input[type="submit"]:hover {
+    background: #3a76e0;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    max-width: 800px;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+th {
+    background: #f0f3f8;
+    text-align: left;
+    padding: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid #e0e6ed;
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #eef1f5;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+#demo td {
+    color: #555;
+}
+
+@media (max-width: 600px) {
+    form,
+    table {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+    <p>This is a sample HTML page.</p>
+
+    <form id="form">
+        <label>Enter Ticker Symbol</label>
+        <input type="text" id="ticker"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <table id="demo">
+    </table>
+    <script>
+        document.getElementById('form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const ticker = document.getElementById('ticker').value.trim();
+            const apiURL = `v1/ticker?symbol=${ticker}`
+            fetch(apiURL)
+                .then(response => {
+                if (!response.ok){
+                    if (response.status == 429){
+                        throw {error : "too many requests try again later"}
+                    }
+                    return response.json().then(err => {
+                        throw err;
+                    });
+                }
+                return response.json()
+                })
+                .then((data) => {
+                  
+                    // creates the header
+                    files = Object.keys(data)
+                    firstAccessionNumber = files[0]
+                    transaction_keys = Object.keys(data[firstAccessionNumber]["data"][0])
+                    th = ''
+                    for (var key in transaction_keys){
+                        th += `<th>${transaction_keys[key]}</th>`
+                    }
+                    header = `<tr>${th}</tr>`
+
+                    // creates the rows 
+                    tr = ''
+                    for (var file in files) {
+                        accessionNumber = files[file]
+                        transactions = data[accessionNumber]["data"].length;
+                        // th = '' // right under here
+                                                
+                        for (var transaction in data[accessionNumber]["data"]) {
+                            td = ''
+                            for (var trans_key in transaction_keys) {
+                                special_key = transaction_keys[trans_key]
+                                
+                                td += `<td>${data[accessionNumber]["data"][transaction][special_key]}</td>`
+                            }
+                            tr += `<tr>${td}</tr>`
+                        }
+                    }
+                    console.log(header)
+
+                    document.getElementById("demo").innerHTML = header + tr
+                })
+                .catch(err => {
+                    document.getElementById("form").innerHTML = err.error;
+
+                })
+
+            })
+        </script>
+</body>
+</html>
