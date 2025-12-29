@@ -6,9 +6,12 @@ eagle
 *.sh
 *.xml
 *.zip
+*.json
 tmp/
 xml/
 cmd/
 scripts/
 static/
 misc/
+
+git commit -m "migrating db from postgres to sqlite"

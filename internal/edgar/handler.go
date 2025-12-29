@@ -1,6 +1,7 @@
 package edgar
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"log"
@@ -28,7 +29,15 @@ func (h *Handler) HandlerF4Filings(w http.ResponseWriter, r *http.Request) {
 	}
 	cik, err := h.service.db.GetCIKByTicker(context.Background(), tickerSymbol)
 	if err != nil {
-		log.Fatal("database call for GetCIKByTicker was not successful")
+		log.Println("database call for GetCIKByTicker was not successful", err)
+		errorMessage := make(map[string]string)
+		errorMessage["error"] = "Malformed or Unsupported ticker symbol"
+		var buf bytes.Buffer
+		encoder := json.NewEncoder(&buf)
+		encoder.Encode(errorMessage)
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		w.Write(buf.Bytes())
+		return
 	}
 	allRecentFilings, _ := h.service.StockFilings(cik)
 	recentFilings, _ := StockRecentFilings(allRecentFilings)

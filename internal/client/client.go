@@ -13,5 +13,3 @@ func New(cfg *Config) *Config {
 		UserAgent:  cfg.UserAgent,
 	}
 }
-
-

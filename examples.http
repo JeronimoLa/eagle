@@ -1,5 +1,5 @@
 ###
-GET http://localhost:3000/v1/ticker?symbol=TSLA HTTP/1.1
+GET http://localhost:8080/v1/ticker?symbol=TSLA HTTP/1.1
 
 ###
-GET http://localhost:3000/v1/ticker?symbol=TSLA&latest=1 HTTP/1.1
+GET http://localhost:3000/v1/ticker?symbol=TSLA&latest=5 HTTP/1.1
