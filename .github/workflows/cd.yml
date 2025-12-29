@@ -30,7 +30,9 @@ jobs:
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
 
-      
+      - name: 'Building and Pushing to Google Artifactory'
+        run: gcloud builds submit --tag us-central1-docker.pkg.dev/eagle-482202/eagle-ar-repo/eagle:latest .
+
+      - name: Deploy to Cloud Run
+        run: gcloud run deploy eagle --image us-central1-docker.pkg.dev/eagle-482202/eagle-ar-repo/eagle:latest --region us-central1 --allow-unauthenticated --project eagle-482202 --max-instances=4
         
-
-
