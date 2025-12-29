@@ -1,9 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE ticker_cik_mapping (
-    id UUID PRIMARY KEY,
-    ticker TEXT NOT NULL,
-    cik TEXT NOT NULL UNIQUE
+    cik TEXT NOT NULL UNIQUE,
+    ticker TEXT NOT NULL
 );
 -- +goose StatementEnd
 
