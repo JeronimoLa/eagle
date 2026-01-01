@@ -20,7 +20,7 @@ func NewHandler(svc *edgarService) *Handler {
 }
 
 func (h *Handler) HandlerF4Filings(w http.ResponseWriter, r *http.Request) {
-	h.service.IdentifyNewEntries()
+	// h.service.IdentifyNewEntries()
 	form := "4"
 	tickerSymbol := r.URL.Query().Get("symbol")
 	latestFilings, err := strconv.Atoi(r.URL.Query().Get("latest"))
