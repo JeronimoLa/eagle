@@ -36,11 +36,14 @@ func (cfg *edgarService) ParseForm4Files(form4files []TransactionMapping) (map[s
 
 			obj = append(obj, Transactions{
 				SecurityTitle:                   transac.SecurityTitle,
+				RptOwner:                        res.ReportingOwner.ReportingOwnerId.RptOwnerName,
+				SharesBought:                    sharesBought,
+				SharesSold:                      sharesSold,
 				TransactionDate:                 transac.TransactionDate,
 				TransactionCode:                 transac.TransactionCoding,
+				TransactionAcquiredDisposedCode: transac.TransactionAcquiredDisposedCode,
 				TransactionShares:               transac.TransactionShares,
 				TransactionPricePerShare:        pricePerShare.Display(),
-				TransactionAcquiredDisposedCode: transac.TransactionAcquiredDisposedCode,
 				SharesOwnedFollowingTransaction: transac.PostTransactionAmounts,
 				TransactionTotal:                transactionTotal.Display(),
 			})
@@ -48,9 +51,6 @@ func (cfg *edgarService) ParseForm4Files(form4files []TransactionMapping) (map[s
 		data[file.AccessionNumber] = ValidTransactionSignal{
 			CIK:          res.ReportingOwner.ReportingOwnerId.RptOwnerCik,
 			DocumentType: res.DocumentType,
-			SharesBought: sharesBought,
-			SharesSold:   sharesSold,
-			RptOwner:     res.ReportingOwner.ReportingOwnerId.RptOwnerName,
 			Data:         obj,
 		}
 	}

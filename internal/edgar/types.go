@@ -103,20 +103,20 @@ type DerivativeTable struct {
 
 type Transactions struct {
 	SecurityTitle                   string  `json:"security_title"`
+	RptOwner                        string  `json:"rpt_owner"`
+	SharesBought                    float64 `json:"shares_bought"`
+	SharesSold                      float64 `json:"shares_sold"`
 	TransactionDate                 string  `json:"transaction_date"`
 	TransactionCode                 string  `json:"transaction_code"`
+	TransactionAcquiredDisposedCode string  `json:"acquired_disposed"`
 	TransactionShares               float64 `json:"transaction_shares"`
-	TransactionPricePerShare        string  `json:"transaction_price_per_share"`
-	TransactionAcquiredDisposedCode string  `json:"transaction_acquired_disposed_code"`
-	SharesOwnedFollowingTransaction string  `json:"shares_owned_following_transaction"`
+	TransactionPricePerShare        string  `json:"share_price"`
+	SharesOwnedFollowingTransaction string  `json:"remaining_shares"`
 	TransactionTotal                string  `json:"transaction_total"`
 }
 
 type ValidTransactionSignal struct {
 	CIK          string         `json:"cik"`
 	DocumentType string         `json:"document_type"`
-	SharesBought float64        `json:"shares_bought"`
-	SharesSold   float64        `json:"shares_sold"`
-	RptOwner     string         `json:"rpt_owner"`
 	Data         []Transactions `json:"data"`
 }

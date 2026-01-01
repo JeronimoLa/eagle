@@ -6,6 +6,7 @@ eagle
 *.xml
 *.zip
 *.json
+*.html
 tmp/
 xml/
 cmd/

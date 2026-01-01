@@ -20,12 +20,13 @@ func NewHandler(svc *edgarService) *Handler {
 }
 
 func (h *Handler) HandlerF4Filings(w http.ResponseWriter, r *http.Request) {
+	h.service.IdentifyNewEntries()
 	form := "4"
 	tickerSymbol := r.URL.Query().Get("symbol")
 	latestFilings, err := strconv.Atoi(r.URL.Query().Get("latest"))
 	if err != nil {
-		log.Println("func HandlerF4Filings() defaulting to 3 for latest filings")
-		latestFilings = 3
+		latestFilings = 20
+		log.Printf("func HandlerF4Filings() defaulting to %d for latest filings\n", latestFilings)
 	}
 	cik, err := h.service.db.GetCIKByTicker(context.Background(), tickerSymbol)
 	if err != nil {
